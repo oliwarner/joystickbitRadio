@@ -84,14 +84,14 @@ namespace joystickbitRadio {
             return 0
 
         if (value < center - _deadzone)
-            return Math.round(Math.map(value, 0, center - _deadzone, -255, 0))
+            return Math.round(Math.map(value, 0, center + _deadzone, -255, 0))
 
-        return Math.round(Math.map(value, center + _deadzone, 255, 0, 255))
+        return Math.round(Math.map(value, center - _deadzone, 255, 0, 255))
     }
 
     function updateTracks(rawX: number, rawY: number): void {
         let turn = toMotorValue(rawX, _centerX)
-        let drive = toMotorValue(255 - rawY, _centerY)
+        let drive = toMotorValue(rawY, _centerY)
         let left = (drive - turn)
         let right = (drive + turn)
         let maximum = Math.max(Math.abs(left), Math.abs(right))
