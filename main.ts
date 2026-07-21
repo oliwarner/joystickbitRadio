@@ -145,10 +145,10 @@ namespace joystickbitRadio {
         _f = (value & (1 << 19)) != 0
 
 
-        if (c && !_previousC) control.raiseEvent(EVENT_SOURCE, Button.C)
-        if (d && !_previousD) control.raiseEvent(EVENT_SOURCE, Button.D)
-        if (e && !_previousE) control.raiseEvent(EVENT_SOURCE, Button.E)
-        if (f && !_previousF) control.raiseEvent(EVENT_SOURCE, Button.F)
+        if (_c && !_previousC) control.raiseEvent(EVENT_SOURCE, Button.C)
+        if (_d && !_previousD) control.raiseEvent(EVENT_SOURCE, Button.D)
+        if (_e && !_previousE) control.raiseEvent(EVENT_SOURCE, Button.E)
+        if (_f && !_previousF) control.raiseEvent(EVENT_SOURCE, Button.F)
 
         _previousC = _c
         _previousD = _d
@@ -167,7 +167,6 @@ namespace joystickbitRadio {
         if (button == Button.C) return _c
         if (button == Button.D) return _d
         if (button == Button.E) return _e
-
         return _f
     }
 
