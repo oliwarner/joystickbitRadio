@@ -32,6 +32,17 @@ namespace joystickbitRadio {
     const BUTTON_E = 18
     const BUTTON_F = 19
 
+    export enum Button {
+        //% block="C"
+        C = 0,
+        //% block="D"
+        D = 1,
+        //% block="E"
+        E = 2,
+        //% block="F"
+        F = 3
+    }
+
 
     /**
      * Returns the current joystick state as a packed integer.
@@ -134,10 +145,10 @@ namespace joystickbitRadio {
         _f = (value & (1 << 19)) != 0
 
 
-        if (c && !_previousC) control.raiseEvent(EVENT_SOURCE, BUTTON_C)
-        if (d && !_previousD) control.raiseEvent(EVENT_SOURCE, BUTTON_D)
-        if (e && !_previousE) control.raiseEvent(EVENT_SOURCE, BUTTON_E)
-        if (f && !_previousF) control.raiseEvent(EVENT_SOURCE, BUTTON_F)
+        if (c && !_previousC) control.raiseEvent(EVENT_SOURCE, Button.C)
+        if (d && !_previousD) control.raiseEvent(EVENT_SOURCE, Button.D)
+        if (e && !_previousE) control.raiseEvent(EVENT_SOURCE, Button.E)
+        if (f && !_previousF) control.raiseEvent(EVENT_SOURCE, Button.F)
 
         _previousC = c
         _previousD = d
@@ -151,17 +162,14 @@ namespace joystickbitRadio {
     //% block="joystick Y"
     export function y(): number { return _y }
 
-    //% block="button C"
-    export function c(): boolean { return _c }
+    //% block="joystick button $button is pressed"
+    export function button(button: Button): boolean {
+        if (button == Button.C) return _c
+        if (button == Button.D) return _d
+        if (button == Button.E) return _e
 
-    //% block="button D"
-    export function d(): boolean { return _d }
-
-    //% block="button E"
-    export function e(): boolean { return _e }
-
-    //% block="button F"
-    export function f(): boolean { return _f }
+        return _f
+    }
 
     //% block="left track speed"
     export function leftTrack(): number { return _leftTrack }
@@ -169,23 +177,8 @@ namespace joystickbitRadio {
     //% block="right track speed"
     export function rightTrack(): number { return _rightTrack }
 
-    //% block="on button C pressed"
-    export function onButtonCPressed(handler: () => void): void {
-        control.onEvent(EVENT_SOURCE, BUTTON_C, handler)
-    }
-
-    //% block="on button D pressed"
-    export function onButtonDPressed(handler: () => void): void {
-        control.onEvent(EVENT_SOURCE, BUTTON_D, handler)
-    }
-
-    //% block="on button E pressed"
-    export function onButtonEPressed(handler: () => void): void {
-        control.onEvent(EVENT_SOURCE, BUTTON_E, handler)
-    }
-
-    //% block="on button F pressed"
-    export function onButtonFPressed(handler: () => void): void {
-        control.onEvent(EVENT_SOURCE, BUTTON_F, handler)
+    //% block="on joystick button $button pressed"
+    export function onButtonPressed(button: Button, handler: () => void): void {
+        control.onEvent(EVENT_SOURCE, button, handler)
     }
 }
