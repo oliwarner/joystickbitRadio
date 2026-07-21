@@ -10,6 +10,15 @@ namespace joystickbitRadio {
     let _e = false
     let _f = false
 
+    let _mapMin = 0
+    let _mapMax = 4
+    let _deadzone = 10
+
+    // These are the actual centre readings of the joystick.
+    let _centerX = 130
+    let _centerY = 130
+
+
     /**
      * Returns the current joystick state as a packed integer.
      */
@@ -35,11 +44,62 @@ namespace joystickbitRadio {
         return value
     }
 
-    //% block="decode joystick %value"
+    /**
+     * Configure the translated joystick range and centre deadzone.
+     *
+     * For example:
+     * initialize(0, 4, 10)
+     *
+     * gives a 5x5 grid from 0 to 4, with a deadzone
+     * of 10 raw joystick units around the centre.
+     */
+    //% block="initialize joystick mapping from $min to $max with deadzone $deadzone"
+    //% min.defl=0 max.defl=4 deadzone.defl=10
+    export function initialize(min: number, max: number, deadzone: number): void {
+        _mapMin = min
+        _mapMax = max
+        _deadzone = deadzone
+    }
+
+    function translateAxis(value: number, center: number): number {
+        let outputCenter = (_mapMin + _mapMax) / 2
+
+        // Centre deadzone always returns the exact centre value.
+        if (Math.abs(value - center) <= _deadzone)
+            return Math.round(outputCenter)
+
+        // Lower half of the physical joystick range.
+        if (value < center - _deadzone) {
+            return Math.round(Math.map(
+                value,
+                0,
+                center - _deadzone,
+                _mapMax,
+                outputCenter
+            ))
+        }
+
+        // Upper half of the physical joystick range.
+        return Math.round(Math.map(
+            value,
+            center + _deadzone,
+            255,
+            outputCenter,
+            _mapMin
+        ))
+    }
+
+    /**
+     * Decode a packed joystick value.
+     */
+    //% block="decode joystick $value"
     export function decode(value: number): void {
 
-        _x = value & 0xFF
-        _y = (value >> 8) & 0xFF
+        let rawX = value & 0xFF
+        let rawY = (value >> 8) & 0xFF
+
+        _x = translateAxis(rawX, _centerX)
+        _y = translateAxis(rawY, _centerY)
 
         _c = (value & (1 << 16)) != 0
         _d = (value & (1 << 17)) != 0
