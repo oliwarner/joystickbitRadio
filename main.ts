@@ -34,15 +34,14 @@ namespace joystickbitRadio {
 
     export enum Button {
         //% block="C"
-        C = 0,
+        C = 1,
         //% block="D"
-        D = 1,
+        D = 2,
         //% block="E"
-        E = 2,
+        E = 3,
         //% block="F"
-        F = 3
+        F = 4
     }
-
 
     /**
      * Returns the current joystick state as a packed integer.
