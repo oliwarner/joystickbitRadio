@@ -38,8 +38,8 @@ namespace joystickbitRadio {
     //% block="decode joystick %value"
     export function decode(value: number): void {
 
-        _x = value & 0x3FF
-        _y = (value >> 8) & 0x3FF
+        _x = value & 0xFF
+        _y = (value >> 8) & 0xFF
 
         _c = (value & (1 << 16)) != 0
         _d = (value & (1 << 17)) != 0
