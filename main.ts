@@ -18,6 +18,10 @@ namespace joystickbitRadio {
     let _centerX = 130
     let _centerY = 130
 
+    // tank controls
+    let _leftTrack = 0
+    let _rightTrack = 0
+
 
     /**
      * Returns the current joystick state as a packed integer.
@@ -89,6 +93,31 @@ namespace joystickbitRadio {
         ))
     }
 
+    function toMotorValue(value: number): number {
+        let center = (_mapMin + _mapMax) / 2
+        if (value < center)
+            return Math.round(Math.map(value, _mapMin, center, -255, 0))
+        return Math.round(Math.map(value, center, _mapMax, 0, 255))
+    }
+
+    function updateTracks(x: number, y: number): void {
+        let turn = toMotorValue(x)
+        let drive = toMotorValue(y)
+
+        let left = drive + turn
+        let right = drive - turn
+
+        let maximum = Math.max(Math.abs(left), Math.abs(right))
+
+        if (maximum > 255) {
+            left = Math.idiv(left * 255, maximum)
+            right = Math.idiv(right * 255, maximum)
+        }
+
+        _leftTrack = left
+        _rightTrack = right
+    }
+
     /**
      * Decode a packed joystick value.
      */
@@ -100,6 +129,7 @@ namespace joystickbitRadio {
 
         _x = translateAxis(rawX, _centerX)
         _y = translateAxis(rawY, _centerY)
+        updateTracks(_x, _y)
 
         _c = (value & (1 << 16)) != 0
         _d = (value & (1 << 17)) != 0
@@ -124,4 +154,14 @@ namespace joystickbitRadio {
 
     //% block="button F"
     export function f(): boolean { return _f }
+
+    //% block="left track speed"
+    export function leftTrack(): number {
+        return _leftTrack
+    }
+
+    //% block="right track speed"
+    export function rightTrack(): number {
+        return _rightTrack
+    }
 }
