@@ -17,19 +17,19 @@ namespace joystickbitRadio {
     export function bitmask(): number {
         let value = 0
 
-        value |= Math.idiv(joystickbit.getX(), 4)
-        value |= Math.idiv(joystickbit.getY(), 4) << 8
+        value |= Math.idiv(joystickbit.getRockerValue(joystickbit.rockerType.X), 4)
+        value |= Math.idiv(joystickbit.getRockerValue(joystickbit.rockerType.Y), 4) << 8
 
-        if (joystickbit.buttonPressed(JoystickBitPin.P12))
+        if (joystickbit.getButton(joystickbit.JoystickBitPin.P12))
             value |= 1 << 16
 
-        if (joystickbit.buttonPressed(JoystickBitPin.P13))
+        if (joystickbit.getButton(joystickbit.JoystickBitPin.P13))
             value |= 1 << 17
 
-        if (joystickbit.buttonPressed(JoystickBitPin.P14))
+        if (joystickbit.getButton(joystickbit.JoystickBitPin.P14))
             value |= 1 << 18
 
-        if (joystickbit.buttonPressed(JoystickBitPin.P15))
+        if (joystickbit.getButton(joystickbit.JoystickBitPin.P15))
             value |= 1 << 19
 
         return value

@@ -1,6 +1,6 @@
 # Joystick Radio
 
-A MakeCode extension that packs the state of a Kitronik Joystick:Bit into a single integer for transmission over the micro:bit radio.
+A MakeCode extension that packs the state of a Elecfreaks Joystick:Bit into a single integer for transmission over the micro:bit radio.
 
 ## Features
 

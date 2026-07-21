@@ -1,10 +1,10 @@
 {
     "name": "joystickbit-radio",
     "version": "0.0.1",
-    "description": "Radio encoder/decoder for the Kitronik Joystick:Bit",
+    "description": "Radio encoder/decoder for the Elecfreaks Joystick:Bit",
     "dependencies": {
         "core": "*",
-        "joystickbit": "github:KitronikLtd/pxt-kitronik-joystickbit"
+        "joystickbit": "github:elecfreaks/pxt-joystickbit"
     },
     "files": [
         "main.ts",
