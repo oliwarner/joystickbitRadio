@@ -74,23 +74,11 @@ namespace joystickbitRadio {
 
         // Lower half of the physical joystick range.
         if (value < center - _deadzone) {
-            return Math.round(Math.map(
-                value,
-                0,
-                center - _deadzone,
-                _mapMax,
-                outputCenter
-            ))
+            return Math.round(Math.map(value, 0, center - _deadzone, _mapMax, outputCenter))
         }
 
         // Upper half of the physical joystick range.
-        return Math.round(Math.map(
-            value,
-            center + _deadzone,
-            255,
-            outputCenter,
-            _mapMin
-        ))
+        return Math.round(Math.map(value, center + _deadzone, 255, outputCenter, _mapMin))
     }
 
     function toMotorValue(value: number, center: number): number {
@@ -105,7 +93,7 @@ namespace joystickbitRadio {
 
     function updateTracks(rawX: number, rawY: number): void {
         let turn = toMotorValue(rawX, _centerX)
-        let drive = -toMotorValue(rawY, _centerY)
+        let drive = toMotorValue(rawY, _centerY)
         let left = drive + turn
         let right = drive - turn
         let maximum = Math.max(Math.abs(left), Math.abs(right))
