@@ -27,10 +27,10 @@ namespace joystickbitRadio {
     let _previousD = false
     let _previousE = false
     let _previousF = false
-    const BUTTON_C = 1
-    const BUTTON_D = 2
-    const BUTTON_E = 3
-    const BUTTON_F = 4
+    const BUTTON_C = 16
+    const BUTTON_D = 17
+    const BUTTON_E = 18
+    const BUTTON_F = 19
 
 
     /**
@@ -134,10 +134,10 @@ namespace joystickbitRadio {
         _f = (value & (1 << 19)) != 0
 
 
-        if (c && !_previousC) control.raiseEvent(BUTTON_C, 1)
-        if (d && !_previousD) control.raiseEvent(BUTTON_D, 1)
-        if (e && !_previousE) control.raiseEvent(BUTTON_E, 1)
-        if (f && !_previousF) control.raiseEvent(BUTTON_F, 1)
+        if (c && !_previousC) control.raiseEvent(EVENT_SOURCE, BUTTON_C)
+        if (d && !_previousD) control.raiseEvent(EVENT_SOURCE, BUTTON_D)
+        if (e && !_previousE) control.raiseEvent(EVENT_SOURCE, BUTTON_E)
+        if (f && !_previousF) control.raiseEvent(EVENT_SOURCE, BUTTON_F)
 
         _previousC = c
         _previousD = d
