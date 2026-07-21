@@ -21,6 +21,17 @@ namespace joystickbitRadio {
     let _leftTrack = 0
     let _rightTrack = 0
 
+    // event
+    const EVENT_SOURCE = 9876  // should be unique?!
+    let _previousC = false
+    let _previousD = false
+    let _previousE = false
+    let _previousF = false
+    const BUTTON_C = 1
+    const BUTTON_D = 2
+    const BUTTON_E = 3
+    const BUTTON_F = 4
+
 
     /**
      * Returns the current joystick state as a packed integer.
@@ -121,6 +132,17 @@ namespace joystickbitRadio {
         _d = (value & (1 << 17)) != 0
         _e = (value & (1 << 18)) != 0
         _f = (value & (1 << 19)) != 0
+
+
+        if (c && !_previousC) control.raiseEvent(BUTTON_C, 1)
+        if (d && !_previousD) control.raiseEvent(BUTTON_D, 1)
+        if (e && !_previousE) control.raiseEvent(BUTTON_E, 1)
+        if (f && !_previousF) control.raiseEvent(BUTTON_F, 1)
+
+        _previousC = c
+        _previousD = d
+        _previousE = e
+        _previousF = f
     }
 
     //% block="joystick X"
@@ -146,4 +168,24 @@ namespace joystickbitRadio {
 
     //% block="right track speed"
     export function rightTrack(): number { return _rightTrack }
+
+    //% block="on button C pressed"
+    export function onButtonCPressed(handler: () => void): void {
+        control.onEvent(EVENT_SOURCE, BUTTON_C, handler)
+    }
+
+    //% block="on button D pressed"
+    export function onButtonDPressed(handler: () => void): void {
+        control.onEvent(EVENT_SOURCE, BUTTON_D, handler)
+    }
+
+    //% block="on button E pressed"
+    export function onButtonEPressed(handler: () => void): void {
+        control.onEvent(EVENT_SOURCE, BUTTON_E, handler)
+    }
+
+    //% block="on button F pressed"
+    export function onButtonFPressed(handler: () => void): void {
+        control.onEvent(EVENT_SOURCE, BUTTON_F, handler)
+    }
 }
