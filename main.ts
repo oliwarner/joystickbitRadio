@@ -150,10 +150,10 @@ namespace joystickbitRadio {
         if (e && !_previousE) control.raiseEvent(EVENT_SOURCE, Button.E)
         if (f && !_previousF) control.raiseEvent(EVENT_SOURCE, Button.F)
 
-        _previousC = c
-        _previousD = d
-        _previousE = e
-        _previousF = f
+        _previousC = _c
+        _previousD = _d
+        _previousE = _e
+        _previousF = _f
     }
 
     //% block="joystick X"
