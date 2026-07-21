@@ -93,20 +93,21 @@ namespace joystickbitRadio {
         ))
     }
 
-    function toMotorValue(value: number): number {
-        let center = (_mapMin + _mapMax) / 2
-        if (value < center)
-            return Math.round(Math.map(value, _mapMin, center, -255, 0))
-        return Math.round(Math.map(value, center, _mapMax, 0, 255))
+    function toMotorValue(value: number, center: number): number {
+        if (Math.abs(value - center) <= _deadzone)
+            return 0
+
+        if (value < center - _deadzone)
+            return Math.round(Math.map(value, 0, center - _deadzone, -255, 0))
+
+        return Math.round(Math.map(value, center + _deadzone, 255, 0, 255))
     }
 
-    function updateTracks(x: number, y: number): void {
-        let turn = toMotorValue(x)
-        let drive = toMotorValue(y)
-
+    function updateTracks(rawX: number, rawY: number): void {
+        let turn = toMotorValue(rawX, _centerX)
+        let drive = -toMotorValue(rawY, _centerY)
         let left = drive + turn
         let right = drive - turn
-
         let maximum = Math.max(Math.abs(left), Math.abs(right))
 
         if (maximum > 255) {
@@ -123,13 +124,12 @@ namespace joystickbitRadio {
      */
     //% block="decode joystick $value"
     export function decode(value: number): void {
-
         let rawX = value & 0xFF
         let rawY = (value >> 8) & 0xFF
 
         _x = translateAxis(rawX, _centerX)
         _y = translateAxis(rawY, _centerY)
-        updateTracks(_x, _y)
+        updateTracks(rawX, rawY)
 
         _c = (value & (1 << 16)) != 0
         _d = (value & (1 << 17)) != 0
@@ -156,12 +156,8 @@ namespace joystickbitRadio {
     export function f(): boolean { return _f }
 
     //% block="left track speed"
-    export function leftTrack(): number {
-        return _leftTrack
-    }
+    export function leftTrack(): number { return _leftTrack }
 
     //% block="right track speed"
-    export function rightTrack(): number {
-        return _rightTrack
-    }
+    export function rightTrack(): number { return _rightTrack }
 }
