@@ -93,7 +93,7 @@ namespace joystickbitRadio {
 
     function updateTracks(rawX: number, rawY: number): void {
         let turn = toMotorValue(rawX, _centerX)
-        let drive = toMotorValue(rawY, _centerY)
+        let drive = toMotorValue(rawY * -1, _centerY)
         let left = drive + turn
         let right = drive - turn
         let maximum = Math.max(Math.abs(left), Math.abs(right))
