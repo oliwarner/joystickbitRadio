@@ -126,8 +126,8 @@ namespace joystickbitRadio {
     //% yMax.defl=100
     export function withTranslatedCoordinates(xMin: number, xMax: number, yMin: number, yMax: number, handler: (x: number, y: number) => void) {
         handler(
-            translateAxis(_x, xMin, xMax, _xCenter),
-            translateAxis(_y, yMin, yMax, _yCenter)
+            translateAxis(_x, xMin, xMax, _centerX),
+            translateAxis(_y, yMin, yMax, _centerY)
         )
     }
 
