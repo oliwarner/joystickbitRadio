@@ -1,6 +1,6 @@
 {
     "name": "joystickbit-radio",
-    "version": "0.1.3",
+    "version": "1.0.0",
     "description": "Radio encoder/decoder for the Elecfreaks Joystick:Bit",
     "dependencies": {
         "core": "*",

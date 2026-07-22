@@ -12,7 +12,6 @@ namespace joystickbitRadio {
     let _f = false
 
     let _deadzone = 10
-
     let _centerX = 130
     let _centerY = 130
 

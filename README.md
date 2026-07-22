@@ -1,41 +1,39 @@
-# Joystick Radio
+# Joystickbit Radio
 
-A MakeCode extension that packs the state of a Elecfreaks Joystick:Bit into a single integer for transmission over the micro:bit radio.
+A MakeCode extension that handles a binary bitmask to represent a joystick state. This allows you to handle full state exchange in a single radio message. I've also included some creature comforts to take the worst out of robotics for new programmers.
 
 ## Features
 
 - Encode joystick X and Y positions
 - Encode buttons C, D, E and F
 - Decode a received radio number back into joystick values
+- Utility functions for:
+  - Remapping axes
+  - Turning the joystick into a simple tank controller
 
-## Sender
+## Transmitter
 
 ```blocks
+radio.setGroup(100)
 radio.sendNumber(joystickRadio.bitmask())
 ```
 
 ## Receiver
 
 ```blocks
-radio.onReceivedNumber(function (value) {
-    joystickRadio.decode(value)
+radio.setGroup(100)
+joystickbitRadio.initialize(10)  // set the deadzone to 10
 
-    if (joystickRadio.c()) {
-        basic.showIcon(IconNames.Heart)
-    }
+radio.onReceivedNumber(function (receivedNumber) {
+    joystickRadio.decode(receivedNumber)
+})
+
+joystickbitRadio.onButtonPressed(joystickbitRadio.Button.D, function () {
+    basic.showIcon(IconNames.Heart)
 })
 ```
 
-Use
-
-- `joystickRadio.x()`
-- `joystickRadio.y()`
-- `joystickRadio.c()`
-- `joystickRadio.d()`
-- `joystickRadio.e()`
-- `joystickRadio.f()`
-
-after calling `decode()`.
+![demo](demo-receiver.png)
 
 ## License
 
