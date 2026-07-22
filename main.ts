@@ -1,5 +1,6 @@
 //% color=#0fbc11 icon="\uf11b"
 //% block="JoystickBit Radio"
+//% groups='["Transmitter", "Receiver"]'
 namespace joystickbitRadio {
 
     let _x = 0
@@ -10,8 +11,6 @@ namespace joystickbitRadio {
     let _e = false
     let _f = false
 
-    let _mapMin = 0
-    let _mapMax = 4
     let _deadzone = 10
 
     let _centerX = 130
@@ -27,10 +26,6 @@ namespace joystickbitRadio {
     let _previousD = false
     let _previousE = false
     let _previousF = false
-    const BUTTON_C = 16
-    const BUTTON_D = 17
-    const BUTTON_E = 18
-    const BUTTON_F = 19
 
     export enum Button {
         //% block="C"
@@ -46,6 +41,7 @@ namespace joystickbitRadio {
     /**
      * Returns the current joystick state as a packed integer.
      */
+    //% group="Transmitter"
     //% block="joystick bitmask"
     export function bitmask(): number {
         let value = 0
@@ -68,20 +64,11 @@ namespace joystickbitRadio {
         return value
     }
 
-    /**
-     * Configure the translated joystick range and centre deadzone.
-     *
-     * For example:
-     * initialize(0, 4, 10)
-     *
-     * gives a 5x5 grid from 0 to 4, with a deadzone
-     * of 10 raw joystick units around the centre.
-     */
-    //% block="initialize joystick mapping from $min to $max with deadzone $deadzone"
-    //% min.defl=0 max.defl=4 deadzone.defl=10
-    export function initialize(min: number, max: number, deadzone: number): void {
-        _mapMin = min
-        _mapMax = max
+    //% block="initialize joystick receiver with deadzone $deadzone"
+    //% group="Receiver"
+    //% weight=1
+    //% deadzone.defl=10
+    export function initialize(deadzone: number): void {
         _deadzone = deadzone
     }
 
@@ -100,49 +87,16 @@ namespace joystickbitRadio {
         return Math.round(Math.map(value, center + _deadzone, 255, outputCenter, _mapMin))
     }
 
-    function toMotorValue(value: number, center: number): number {
-        if (Math.abs(value - center) <= _deadzone)
-            return 0
-
-        if (value < center - _deadzone)
-            return Math.round(Math.map(value, 0, center + _deadzone, -255, 0))
-
-        return Math.round(Math.map(value, center - _deadzone, 255, 0, 255))
-    }
-
-    function updateTracks(rawX: number, rawY: number): void {
-        let turn = toMotorValue(rawX, _centerX)
-        let drive = toMotorValue(rawY, _centerY)
-        let left = (drive - turn)
-        let right = (drive + turn)
-        let maximum = Math.max(Math.abs(left), Math.abs(right))
-
-        if (maximum > 255) {
-            left = Math.idiv(left * 255, maximum)
-            right = Math.idiv(right * 255, maximum)
-        }
-
-        _leftTrack = left
-        _rightTrack = right
-    }
-
-    /**
-     * Decode a packed joystick value.
-     */
-    //% block="decode joystick $value"
+    //% block="decode joystick radio packet $value"
+    //% group="Receiver"
+    //% weight=2
     export function decode(value: number): void {
-        let rawX = value & 0xFF
-        let rawY = (value >> 8) & 0xFF
-
-        _x = translateAxis(rawX, _centerX)
-        _y = translateAxis(rawY, _centerY)
-        updateTracks(rawX, rawY)
-
+        _x = value & 0xFF
+        _y = (value >> 8) & 0xFF
         _c = (value & (1 << 16)) != 0
         _d = (value & (1 << 17)) != 0
         _e = (value & (1 << 18)) != 0
         _f = (value & (1 << 19)) != 0
-
 
         if (_c && !_previousC) control.raiseEvent(EVENT_SOURCE, Button.C)
         if (_d && !_previousD) control.raiseEvent(EVENT_SOURCE, Button.D)
@@ -155,28 +109,85 @@ namespace joystickbitRadio {
         _previousF = _f
     }
 
-    //% block="joystick X"
-    export function x(): number { return _x }
+    //% block="with coordinates"
+    //% group="Receiver"
+    //% weight=10
+    //% handlerStatement
+    //% draggableParameters="reporter"
+    export function withCoordinates(handler: (x: number, y: number) => void) {
+        handler(_x, _y);
+    }
 
-    //% block="joystick Y"
-    export function y(): number { return _y }
+    function translateAxis(value: number, min: number, max: number, center: number): number {
+        let outputCenter = (min + max) / 2
+
+        if (Math.abs(value - center) <= _deadzone)
+            return Math.round(outputCenter)
+
+        if (value < center - _deadzone)
+            return Math.round(Math.map(value, 0, center - _deadzone, max, outputCenter))
+
+        return Math.round(Math.map(value, center + _deadzone, 255, outputCenter, min))
+    }
+
+    //% block="with translated coordinates x $xMin to $xMax y $yMin to $yMax"
+    //% group="Receiver"
+    //% weight=11
+    //% handlerStatement
+    //% draggableParameters="reporter"
+    //% xMin.defl=0
+    //% xMax.defl=100
+    //% yMin.defl=0
+    //% yMax.defl=100
+    export function withTranslatedCoordinates(xMin: number, xMax: number, yMin: number, yMax: number, handler: (x: number, y: number) => void) {
+        handler(
+            translateAxis(_x, xMin, xMax, _xCenter),
+            translateAxis(_y, yMin, yMax, _yCenter)
+        )
+    }
+
+    function toMotorValue(value: number, center: number): number {
+        if (Math.abs(value - center) <= _deadzone)
+            return 0
+
+        if (value < center - _deadzone)
+            return Math.round(Math.map(value, 0, center + _deadzone, -255, 0))
+
+        return Math.round(Math.map(value, center - _deadzone, 255, 0, 255))
+    }
+
+    //% block="with tank tracks"
+    //% group="Receiver"
+    //% weight=12
+    //% handlerStatement
+    //% draggableParameters="reporter"
+    export function withTrackSpeeds(handler: (left: number, right: number) => void) {
+        let turn = toMotorValue(_x, _centerX)
+        let drive = toMotorValue(_y, _centerY)
+        let left = (drive - turn)
+        let right = (drive + turn)
+        let maximum = Math.max(Math.abs(left), Math.abs(right))
+
+        if (maximum > 255) {
+            left = Math.idiv(left * 255, maximum)
+            right = Math.idiv(right * 255, maximum)
+        }
+
+        handler(left, right)
+    }
+
+    //% block="on joystick button $button pressed"
+    //% weight=20
+    export function onButtonPressed(button: Button, handler: () => void): void {
+        control.onEvent(EVENT_SOURCE, button, handler)
+    }
 
     //% block="joystick button $button is pressed"
+    //% weight=21
     export function button(button: Button): boolean {
         if (button == Button.C) return _c
         if (button == Button.D) return _d
         if (button == Button.E) return _e
         return _f
-    }
-
-    //% block="left track speed"
-    export function leftTrack(): number { return _leftTrack }
-
-    //% block="right track speed"
-    export function rightTrack(): number { return _rightTrack }
-
-    //% block="on joystick button $button pressed"
-    export function onButtonPressed(button: Button, handler: () => void): void {
-        control.onEvent(EVENT_SOURCE, button, handler)
     }
 }
