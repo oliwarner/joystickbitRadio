@@ -72,21 +72,6 @@ namespace joystickbitRadio {
         _deadzone = deadzone
     }
 
-    function translateAxis(value: number, center: number): number {
-        let outputCenter = (_mapMin + _mapMax) / 2
-
-        // Centre deadzone always returns the exact centre value.
-        if (Math.abs(value - center) <= _deadzone)
-            return Math.round(outputCenter)
-
-        // Lower half of the physical joystick range.
-        if (value < center - _deadzone)
-            return Math.round(Math.map(value, 0, center - _deadzone, _mapMax, outputCenter))
-
-        // Upper half of the physical joystick range.
-        return Math.round(Math.map(value, center + _deadzone, 255, outputCenter, _mapMin))
-    }
-
     //% block="decode joystick radio packet $value"
     //% group="Receiver"
     //% weight=2
