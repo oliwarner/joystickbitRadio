@@ -160,7 +160,7 @@ namespace joystickbitRadio {
         handler(left, right)
     }
 
-    //% block="on joystick button $button pressed"
+    //% block="on joystick button $btn pressed"
     //% weight=20
     export function onButtonPressed(btn: JButton, handler: () => void): void {
         control.onEvent(EVENT_SOURCE, btn, handler)
@@ -172,6 +172,8 @@ namespace joystickbitRadio {
         if (btn == JButton.C) return _c
         if (btn == JButton.D) return _d
         if (btn == JButton.E) return _e
-        return _f
+        if (btn == JButton.F) return _f
+        serial.writeLine("Button burp: " + btn)
+        return false
     }
 }
