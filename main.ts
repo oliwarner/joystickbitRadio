@@ -26,7 +26,7 @@ namespace joystickbitRadio {
     let _previousE = false
     let _previousF = false
 
-    export enum Button {
+    export enum JButton {
         //% block="C"
         C = 1,
         //% block="D"
@@ -43,7 +43,7 @@ namespace joystickbitRadio {
     //% group="Transmitter"
     //% block="joystick bitmask"
     export function bitmask(): number {
-        let value = 0
+        let value:number = 0
 
         value |= Math.idiv(joystickbit.getRockerValue(joystickbit.rockerType.X), 4)
         value |= Math.idiv(joystickbit.getRockerValue(joystickbit.rockerType.Y), 4) << 8
@@ -82,10 +82,10 @@ namespace joystickbitRadio {
         _e = (value & (1 << 18)) != 0
         _f = (value & (1 << 19)) != 0
 
-        if (_c && !_previousC) control.raiseEvent(EVENT_SOURCE, Button.C)
-        if (_d && !_previousD) control.raiseEvent(EVENT_SOURCE, Button.D)
-        if (_e && !_previousE) control.raiseEvent(EVENT_SOURCE, Button.E)
-        if (_f && !_previousF) control.raiseEvent(EVENT_SOURCE, Button.F)
+        if (_c && !_previousC) control.raiseEvent(EVENT_SOURCE, JButton.C)
+        if (_d && !_previousD) control.raiseEvent(EVENT_SOURCE, JButton.D)
+        if (_e && !_previousE) control.raiseEvent(EVENT_SOURCE, JButton.E)
+        if (_f && !_previousF) control.raiseEvent(EVENT_SOURCE, JButton.F)
 
         _previousC = _c
         _previousD = _d
@@ -162,16 +162,16 @@ namespace joystickbitRadio {
 
     //% block="on joystick button $button pressed"
     //% weight=20
-    export function onButtonPressed(button: Button, handler: () => void): void {
-        control.onEvent(EVENT_SOURCE, button, handler)
+    export function onButtonPressed(btn: JButton, handler: () => void): void {
+        control.onEvent(EVENT_SOURCE, btn, handler)
     }
 
-    //% block="joystick button $button is pressed"
+    //% block="joystick button $btn is pressed"
     //% weight=21
-    export function button(button: Button): boolean {
-        if (button == Button.C) return _c
-        if (button == Button.D) return _d
-        if (button == Button.E) return _e
+    export function button(btn: JButton): boolean {
+        if (btn == JButton.C) return _c
+        if (btn == JButton.D) return _d
+        if (btn == JButton.E) return _e
         return _f
     }
 }
